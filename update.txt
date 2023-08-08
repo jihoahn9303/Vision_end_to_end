@@ -1,0 +1,21 @@
+git init
+git branch -M main
+git add.
+git commit -m "some sentence"
+git remote add origin "your github ssh address"
+git push origin main (or git push origin main --force if commit exists)
+
+------------------------------------------------------------------------
+
+Updating https://github.com/psf/black ... [INFO] Initializing environment for https://github.com/psf/black.
+updating 22.3.0 -> 23.7.0.
+Updating https://github.com/pycqa/flake8 ... [INFO] Initializing environment for https://github.com/pycqa/flake8.
+updating 4.0.1 -> 6.1.0.
+Updating https://github.com/pycqa/isort ... [INFO] Initializing environment for https://github.com/pycqa/isort.
+updating 5.10.1 -> 5.12.0.
+Updating https://github.com/pre-commit/mirrors-mypy ... [INFO] Initializing environment for https://github.com/pre-commit/mirrors-mypy.
+updating v0.961 -> v1.4.1.
+Updating https://github.com/pre-commit/mirrors-prettier ... [INFO] Initializing environment for https://github.com/pre-commit/mirrors-prettier.
+updating v2.6.2 -> v3.0.1.
+Updating https://github.com/pre-commit/pre-commit-hooks ... [INFO] Initializing environment for https://github.com/pre-commit/pre-commit-hooks.
+updating v4.3.0 -> v4.4.0.
