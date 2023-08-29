@@ -45,8 +45,10 @@ class BaseImagenet(Dataset):
         self.set_dataset(split=split)
 
     def __getitem__(self, index) -> list[torch.Tensor]:
-        image: Image.Image = self.dataset[index]["image"]  # 라벨 정보를 제외하고 이미지 정보만 가져옴.
-        image = image.convert("RGB")  # 흑백 이미지도 존재할 수 있으므로, batch 단위 전처리를 위하여 채널을 통일함.
+        # 라벨 정보를 제외하고 이미지 정보만 가져옴.
+        image: Image.Image = self.dataset[index]["image"]
+        # 흑백 이미지도 존재할 수 있으므로, batch 단위 전처리를 위하여 채널을 통일함.
+        image = image.convert("RGB")
         image = np.array(image)
 
         return [self.transforms(image=image)["image"] / 255.0 for _ in range(2)]

@@ -165,6 +165,9 @@ build/*
 data/*
 !data/.gitkeep
 
+datas/*
+!datas/.gitkeep
+
 log/*
 !/log.gitkeep
 
@@ -176,3 +179,7 @@ similarity.py
 delta.py
 
 /lightning_logs
+
+cuda_11.7.0_515.43.04_linux.run
+dataset.py
+legacy.py
