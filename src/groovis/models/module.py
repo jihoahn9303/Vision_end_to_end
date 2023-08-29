@@ -19,7 +19,7 @@ class Vision(LightningModule):
     ) -> None:
         super().__init__()
 
-        self.save_hyperparameters(config)
+        self.save_hyperparameters(config)  # load configurations in pytorch-lightning
         self.architecture = architecture
         self.loss_fn = loss_fn
         self.train_loss = MeanMetric()
@@ -35,16 +35,16 @@ class Vision(LightningModule):
         representations_2 = self(images_2)
 
         loss = self.loss_fn(representations_1, representations_2)
-        self.train_loss(loss)
+        self.train_loss(loss)  # self.train_loss.update(loss)
         self.log(
             name=TRAIN_LOSS,
-            value=self.train_loss,
+            value=self.train_loss,  # compute metric and reset
             on_step=True,
             on_epoch=False,
             logger=True,
         )
 
-        return loss
+        return loss  # return loss to update parameters
 
     def validation_step(self, batch: list[torch.Tensor], _batch_idx: int):
         images_1, images_2 = batch
@@ -59,7 +59,7 @@ class Vision(LightningModule):
             value=self.val_loss,
             on_step=False,
             on_epoch=True,
-            logger=True,
+            logger=True,  # logs to other loggers(ex: Tensorboard, wandb, loguru, ...)
         )
 
     def configure_optimizers(self):
@@ -70,6 +70,7 @@ class Vision(LightningModule):
         scheduler = torch.optim.lr_scheduler.OneCycleLR(
             optimizer=optimizer,
             max_lr=self.hparams.base_lr,
+            # automatically calculate total setps in pytorch-lightning trainer
             total_steps=self.trainer.estimated_stepping_batches,
             pct_start=self.hparams.warmup_epochs / self.hparams.epochs,
             anneal_strategy="linear",
@@ -81,8 +82,8 @@ class Vision(LightningModule):
             "optimizer": optimizer,
             "lr_scheduler": {
                 "scheduler": scheduler,
-                "interval": "step",
-                "frequency": 1,
+                "interval": "step",  # unit to change learning rate(step / epoch)
+                "frequency": 1,  # frequency for changing learning rate
             },
         }
 
