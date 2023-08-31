@@ -1,11 +1,11 @@
 from typing import Optional, Type
 
+from dataset import BaseImagenet
 from pytorch_lightning import LightningDataModule
 from torch.utils.data import DataLoader
 
-from groovis.data.augmentation import SIMCLR_AUG_RELAXED
-from groovis.data.dataset import BaseImagenet
-from groovis.schema import Cfg
+from src.groovis.data.augmentation import SIMCLR_AUG_RELAXED
+from src.groovis.schemas import Cfg
 
 
 class ImagenetModule(LightningDataModule):

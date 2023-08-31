@@ -168,8 +168,8 @@ data/*
 datas/*
 !datas/.gitkeep
 
-log/*
-!/log.gitkeep
+logs/*
+!/logs.gitkeep
 
 wandb/*
 

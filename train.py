@@ -18,11 +18,14 @@ from pytorch_lightning.callbacks import (
 )
 from pytorch_lightning.callbacks.progress.rich_progress import RichProgressBarTheme
 from pytorch_lightning.loggers.wandb import WandbLogger
+from pytorch_lightning.profilers import PyTorchProfiler
 
-from groovis.data import ImagenetModule, Imagenette
-from groovis.loss import SimCLRLoss
-from groovis.models import Architecture, Vision
-from groovis.schema import load_config
+from src.groovis.data.datamodule import ImagenetModule
+from src.groovis.data.dataset import Imagenette
+from src.groovis.loss import SimCLRLoss
+from src.groovis.models.architectures import Architecture
+from src.groovis.models.module import Vision
+from src.groovis.schemas import load_config
 
 # <TODO List for Training and Validation>
 # TODO: Learning Rate Scheduling
@@ -45,7 +48,7 @@ from groovis.schema import load_config
 # 실험 설정 값은 yaml 파일에 저장하여 관리
 config = load_config("config.yaml")
 
-RUN_NAME = "lightning-test-1"
+RUN_NAME = "lightning-profile-test-2"
 VAL_LOSS = "val/loss"
 
 # load data
@@ -63,6 +66,9 @@ architecture = Architecture(
 vision = Vision(architecture=architecture, loss_fn=loss_fn, config=config)
 
 # set logger
+# <log_model parameter>
+# log checkpoints created by ModelCheckpoint as W&B artifacts
+# if True, checkpoints are logged at the end of training.
 logger = WandbLogger(
     project="groovis",
     group="first try",
@@ -71,17 +77,20 @@ logger = WandbLogger(
     log_model=True,
 )
 
-logger.watch(model=architecture, log="all", log_freq=config.log_interval)
+logger.watch(
+    model=architecture, log="all", log_freq=config.log_interval  # parameter + gradients
+)
 
 # set callback list
 callbacks: list[Callback] = [
     ModelCheckpoint(
         dirpath=f"build/{RUN_NAME}",
         filename="{epoch:02d}-val_loss{" + VAL_LOSS + ":.2f}",
-        save_last=True,
-        monitor=VAL_LOSS,
+        save_last=True,  # save the last ckpt file(last.ckpt) to restore environment
+        monitor=VAL_LOSS,  # monitor value for written key
         save_top_k=config.save_top_k,
         mode="min",
+        # save not only model's weight but also states for optimizer and lr-scheduler
         save_weights_only=False,
         auto_insert_metric_name=False,
     ),
@@ -108,15 +117,23 @@ callbacks: list[Callback] = [
     ),
 ]
 
+# set profiler(check cpu & gpu's usage)
+profiler = PyTorchProfiler(
+    dirpath="logs/", filename=f"profile-{RUN_NAME}", export_to_chrome=True
+)
+
 # define trainer
 trainer = Trainer(
     logger=logger,
     callbacks=callbacks,
+    profiler=profiler,
     max_epochs=config.epochs,
     gradient_clip_algorithm="norm",
     gradient_clip_val=config.clip_grad,
     log_every_n_steps=config.log_interval,
     track_grad_norm=2,
+    accelerator="auto",
+    devices=-1,
 )
 
 trainer.fit(model=vision, datamodule=datamodule)

@@ -30,6 +30,6 @@ def load_config(path: str) -> Cfg:
     schema = OmegaConf.structured(Cfg())
 
     # duck typing
-    config: Cfg = OmegaConf.merge(schema, OmegaConf.load(path))
+    config: Cfg = OmegaConf.merge(schema, OmegaConf.load(path))  # type: ignore
 
     return config

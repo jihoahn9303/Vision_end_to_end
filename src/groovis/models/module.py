@@ -4,7 +4,7 @@ from pytorch_lightning import LightningModule
 from torch import nn
 from torchmetrics import MeanMetric
 
-from src.groovis.schema import Cfg
+from src.groovis.schemas import Cfg
 
 TRAIN_LOSS = "train/loss"
 VAL_LOSS = "val/loss"
