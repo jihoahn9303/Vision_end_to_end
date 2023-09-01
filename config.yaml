@@ -6,7 +6,7 @@ warmup_lr: 0.0000005
 warmup_epochs: 1
 total_steps: 1000
 batch_size: 32
-epochs: 3
+epochs: 2
 patience: 4
 clip_grad: 0.5
 temperature: 0.5

@@ -19,11 +19,13 @@ from pytorch_lightning.callbacks import (
 from pytorch_lightning.callbacks.progress.rich_progress import RichProgressBarTheme
 from pytorch_lightning.loggers.wandb import WandbLogger
 from pytorch_lightning.profilers import PyTorchProfiler
+from timm import create_model
 
 from src.groovis.data.datamodule import ImagenetModule
 from src.groovis.data.dataset import Imagenette
 from src.groovis.loss import SimCLRLoss
-from src.groovis.models.architectures import Architecture
+
+# from src.groovis.models.architectures import Architecture
 from src.groovis.models.module import Vision
 from src.groovis.schemas import load_config
 
@@ -48,7 +50,7 @@ from src.groovis.schemas import load_config
 # 실험 설정 값은 yaml 파일에 저장하여 관리
 config = load_config("config.yaml")
 
-RUN_NAME = "lightning-profile-test-2"
+RUN_NAME = "lightning-profile-test-4"
 VAL_LOSS = "val/loss"
 
 # load data
@@ -58,9 +60,10 @@ datamodule = ImagenetModule(config=config, dataset=Imagenette)
 loss_fn = SimCLRLoss(temperature=config.temperature)
 
 # initialize architecture
-architecture = Architecture(
-    patch_size=config.patch_size, channels=config.channels, embed_dim=config.embed_dim
-)
+# architecture = Architecture(
+#     patch_size=config.patch_size, channels=config.channels, embed_dim=config.embed_dim
+# )
+architecture = create_model("vit_small_patch16_224", num_classes=0)
 
 # initialize model
 vision = Vision(architecture=architecture, loss_fn=loss_fn, config=config)
@@ -133,7 +136,7 @@ trainer = Trainer(
     log_every_n_steps=config.log_interval,
     track_grad_norm=2,
     accelerator="auto",
-    devices=-1,
+    devices="auto",
 )
 
 trainer.fit(model=vision, datamodule=datamodule)

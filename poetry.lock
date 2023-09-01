@@ -2405,6 +2405,23 @@ numpy = "*"
 all = ["defusedxml", "fsspec", "imagecodecs (>=2023.8.12)", "lxml", "matplotlib", "zarr"]
 
 [[package]]
+name = "timm"
+version = "0.6.11"
+description = "(Unofficial) PyTorch Image Models"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "timm-0.6.11-py3-none-any.whl", hash = "sha256:8a10e536ecc7caf32a7e42a612a1ae561a1e0d3f1aa836905855f8aff2efa644"},
+    {file = "timm-0.6.11.tar.gz", hash = "sha256:09568842b65abbd8c99864ab893ec0902f8ad577d0112b45e1323e72ca7b3fa5"},
+]
+
+[package.dependencies]
+huggingface-hub = "*"
+pyyaml = "*"
+torch = ">=1.7"
+torchvision = "*"
+
+[[package]]
 name = "tomli"
 version = "2.0.1"
 description = "A lil' TOML parser"
@@ -2880,4 +2897,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "4c851f0a2877356832d0c6381f442ff25e84fc4cefae55514ed8ad2bb06c512a"
+content-hash = "9fbe8f5453109ae81b7e47bcbf70dbad411d01b5974b89a932da2a4269c804fc"
