@@ -72,7 +72,7 @@ class SimCLRLoss(nn.Module):
         B = N // 2  # batch size
 
         similarity.div_(self.temperature)
-        similarity.fill_diagonal_(torch.finfo(torch.float).min)
+        similarity.fill_diagonal_(torch.finfo(similarity.dtype).min)
 
         similarity = similarity.log_softmax(dim=1)
 
@@ -127,7 +127,7 @@ class SimCLRLoss(nn.Module):
                 positive = base_row[idx + 1]
             else:
                 positive = base_row[idx - 1]
-            base_row[idx] = torch.finfo(torch.float).min
+            base_row[idx] = torch.finfo(similarity.dtype).min
 
             positive_probs = positive.exp() / base_row.exp().sum()
             # max_similarity = base_row.exp().sum().log()
@@ -147,7 +147,7 @@ def evaluate_similarity(similarity: torch.Tensor) -> torch.Tensor:
             positive = base_row[idx + 1]
         else:
             positive = base_row[idx - 1]
-        base_row[idx] = torch.finfo(torch.float).min
+        base_row[idx] = torch.finfo(similarity.dtype).min
         # neutral = base_row[idx]
         # averaged_negatives = (base_row.sum() - (neutral + positive)) / (N-2)
         # loss += (averaged_negatives - positive)

@@ -18,7 +18,8 @@ from pytorch_lightning.callbacks import (
 )
 from pytorch_lightning.callbacks.progress.rich_progress import RichProgressBarTheme
 from pytorch_lightning.loggers.wandb import WandbLogger
-from pytorch_lightning.profilers import PyTorchProfiler
+
+# from pytorch_lightning.profilers import PyTorchProfiler
 from timm import create_model
 
 from src.groovis.data.datamodule import ImagenetModule
@@ -50,7 +51,7 @@ from src.groovis.schemas import load_config
 # 실험 설정 값은 yaml 파일에 저장하여 관리
 config = load_config("config.yaml")
 
-RUN_NAME = "lightning-profile-test-4"
+RUN_NAME = "lightning-profile-test-5"
 VAL_LOSS = "val/loss"
 
 # load data
@@ -121,20 +122,21 @@ callbacks: list[Callback] = [
 ]
 
 # set profiler(check cpu & gpu's usage)
-profiler = PyTorchProfiler(
-    dirpath="logs/", filename=f"profile-{RUN_NAME}", export_to_chrome=True
-)
+# profiler = PyTorchProfiler(
+#     dirpath="logs/", filename=f"profile-{RUN_NAME}", export_to_chrome=True
+# )
 
 # define trainer
 trainer = Trainer(
     logger=logger,
     callbacks=callbacks,
-    profiler=profiler,
+    # profiler=profiler,
     max_epochs=config.epochs,
     gradient_clip_algorithm="norm",
     gradient_clip_val=config.clip_grad,
     log_every_n_steps=config.log_interval,
     track_grad_norm=2,
+    precision=16,  # half precision
     accelerator="auto",
     devices="auto",
 )
