@@ -1,4 +1,4 @@
-# From https://jacobian.org/til/github-actions-poetry/
+# From https://jacobian.org/til/github-actions-poetry/ & https://github.com/marketplace/actions/python-poetry-action
 
 # Run this job on pushes to `main`, and for pull requests. If you don't specify
 # `branches: [main], then this actions runs _twice_ on pull requests, which is
@@ -10,13 +10,14 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       # If you wanted to use multiple Python versions, you'd have specify a matrix in the job and
       # reference the matrixe python version here.
-      - uses: actions/setup-python@v2
+      - name: Install Python
+      - uses: actions/setup-python@v4
         with:
-          python-version: 3.10
+          python-version: "3.10"
 
       # Cache the installation of Poetry itself, e.g. the next step. This prevents the workflow
       # from installing Poetry every time, which can be slow. Note the use of the Poetry version

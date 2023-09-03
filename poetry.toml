@@ -1,2 +1,3 @@
 [virtualenvs]
+create=True
 in-project = true
