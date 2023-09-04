@@ -5,7 +5,7 @@ WORKDIR /vision
 ENV DEBIAN_FRONTEND noninteractive \
     TZ Asia/Seoul
 
-RUN apt-get update -y && apt-get install -y python3.9 python3.9-dev python3.9-venv
+RUN apt-get update -y && apt-get install -y python3.10 python3.10-dev python3.10-venv
 
 RUN curl -sSL https://install.python-poetry.org | python3 - --version 1.1.14
 
