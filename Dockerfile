@@ -17,9 +17,9 @@ ENV PATH /root/.local/bin:$PATH
 
 COPY . .
 
-RUN poetry install --no-dev --no-interaction && \
-    poetry run pip install \
-    torch==1.13.0+cu116 torchvision==0.14.0+cu116 \
+RUN poetry install --no-dev --no-interaction
+
+RUN poetry run pip install torch==1.13.0+cu116 torchvision==0.14.0+cu116 \
     --extra-index-url https://download.pytorch.org/whl/cu116
 
 ENTRYPOINT ["poetry", "run", "python", "train.py"]
