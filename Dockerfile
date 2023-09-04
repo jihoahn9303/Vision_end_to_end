@@ -9,7 +9,7 @@ RUN apt-get update -y && apt-get install -y software-properties-common
 
 RUN add-apt-repository ppa:deadsnakes/ppa -y
 
-RUN apt-get install -y python3.10 python3.10-dev python3.10-venv
+RUN apt-get install -y python3.10 python3.10-dev python3.10-venv python3.10-distutils
 
 RUN apt-get install -y curl
 
