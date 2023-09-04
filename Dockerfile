@@ -1,4 +1,4 @@
-FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu20.04
+FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04
 
 WORKDIR /vision
 
@@ -15,8 +15,8 @@ RUN apt-get install -y curl
 
 ENV PATH /root/.local/bin:$PATH
 
-# RUN curl -sSL https://install.python-poetry.org | python3 - --git https://github.com/python-poetry/poetry.git@master
-RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python3
+RUN curl -sSL https://install.python-poetry.org
+RUN POETRY_HOME=/opt/poetry python3
 ENV PATH /opt/poetry/bin:$PATH
 RUN poetry config virtualenvs.create false
 
