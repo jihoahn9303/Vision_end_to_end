@@ -7,25 +7,6 @@
 on: push
 
 jobs:
-  free-disk-space:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Free Disk Space (Ubuntu)
-        uses: jlumbroso/free-disk-space@main
-        with:
-          # this might remove tools that are actually needed,
-          # if set to "true" but frees about 6 GB
-          tool-cache: false
-
-          # all of these default to true, but feel free to set to
-          # "false" if necessary for your workflow
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: true
-          docker-images: true
-          swap-storage: true
-
   test:
     runs-on: ubuntu-latest
     needs: free-disk-space
@@ -94,9 +75,16 @@ jobs:
       # so this line is super-simple. But it could be as complex as you need.
       # - run: poetry run pytest
 
-  build:
+  free-disk-space:
     runs-on: ubuntu-latest
     needs: test
+    steps:
+      - name: Delete huge unnecessary tools folder
+        run: rm -rf /opt/hostedtoolcache
+
+  build:
+    runs-on: ubuntu-latest
+    needs: free-disk-space
     steps:
       - name: Checkout
         uses: actions/checkout@v3
