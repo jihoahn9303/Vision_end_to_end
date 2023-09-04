@@ -1,4 +1,3 @@
 {
-  "python.linting.enabled": false,
   "dev.containers.defaultExtensions": ["mutantdino.resourcemonitor"]
 }
