@@ -1,7 +1,7 @@
 import pytest
 import torch
 
-from src.groovis.loss import SimCLRLoss
+from ..src.groovis.loss import SimCLRLoss
 
 
 @pytest.fixture
