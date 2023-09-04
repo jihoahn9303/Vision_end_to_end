@@ -15,7 +15,7 @@ RUN apt-get install -y curl
 
 ENV PATH /root/.local/bin:$PATH
 
-RUN curl -sSL https://install.python-poetry.org
+RUN curl -sSL https://install.python-poetry.org | python3 -
 RUN POETRY_HOME=/opt/poetry python3
 ENV PATH /opt/poetry/bin:$PATH
 RUN poetry config virtualenvs.create false
