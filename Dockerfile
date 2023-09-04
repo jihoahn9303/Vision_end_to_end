@@ -9,7 +9,7 @@ ENV DEBIAN_FRONTEND noninteractive \
 RUN apt-get update -y && apt-get install -y \
     software-properties-common && \
     add-apt-repository ppa:deadsnakes/ppa -y && \
-    apt-get install -y
+    apt-get install -y \
     python3.10 \
     python3.10-dev \
     python3.10-venv \
