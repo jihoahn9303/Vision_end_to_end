@@ -22,6 +22,8 @@ class Cfg:
     temperature: float = 0.1
     log_interval: int = 50
     save_top_k: int = 3
+    run_name: str = "default-test"
+    offline: bool = False
 
 
 # OmegaConf 자료형으로 개별 멤버 값에 직접적으로 접근이 불가능

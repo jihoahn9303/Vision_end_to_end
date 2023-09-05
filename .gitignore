@@ -186,7 +186,7 @@ dataset.py
 legacy.py
 
 update.txt
-
 legacy.txt
 
-lambda_for_vision.pem
+
+outputs/
