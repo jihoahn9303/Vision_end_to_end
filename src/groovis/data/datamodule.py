@@ -6,14 +6,14 @@ from torch.utils.data import DataLoader
 
 from src.groovis.data.augmentation import SIMCLR_AUG_RELAXED
 from src.groovis.data.dataset import BaseImagenet
-from src.groovis.schemas import Cfg
+from src.groovis.schemas import Config
 
 
 class ImagenetModule(LightningDataModule):
-    hparams: Cfg
+    hparams: Config
     trainer: Optional[Trainer]
 
-    def __init__(self, config: Cfg, dataset: Type[BaseImagenet]):
+    def __init__(self, config: Config, dataset: Type[BaseImagenet]):
         super().__init__()
         self.save_hyperparameters(config)
         self.dataset = dataset

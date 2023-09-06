@@ -4,7 +4,7 @@ from pytorch_lightning import LightningModule
 from torch import nn
 from torchmetrics import MeanMetric
 
-from src.groovis.schemas import Cfg
+from src.groovis.schemas import Config
 
 TRAIN_LOSS = "train/loss"
 VAL_LOSS = "val/loss"
@@ -12,10 +12,10 @@ VAL_LOSS = "val/loss"
 
 # self-contained class (architecture + instruction for architecture)
 class Vision(LightningModule):
-    hparams: Cfg
+    hparams: Config
 
     def __init__(
-        self, architecture: nn.Module, loss_fn: nn.Module, config: Cfg
+        self, architecture: nn.Module, loss_fn: nn.Module, config: Config
     ) -> None:
         super().__init__()
 
