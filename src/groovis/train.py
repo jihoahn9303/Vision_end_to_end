@@ -1,3 +1,4 @@
+from hydra_zen import instantiate
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import (
     Callback,
@@ -9,9 +10,7 @@ from pytorch_lightning.callbacks import (
 )
 from pytorch_lightning.callbacks.progress.rich_progress import RichProgressBarTheme
 from pytorch_lightning.loggers.wandb import WandbLogger
-
-# from pytorch_lightning.profilers import PyTorchProfiler
-from timm import create_model
+from torch import nn
 
 from src.groovis.data.datamodule import ImagenetModule
 from src.groovis.data.dataset import Imagenette
@@ -19,7 +18,11 @@ from src.groovis.loss import SimCLRLoss
 
 # from src.groovis.models.architectures import Architecture
 from src.groovis.models.module import Vision
-from src.groovis.schemas import Cfg
+from src.groovis.schemas import Config
+
+# from pytorch_lightning.profilers import PyTorchProfiler
+# from timm import create_model
+
 
 # <TODO List for Training and Validation>
 # TODO: Learning Rate Scheduling
@@ -40,7 +43,7 @@ from src.groovis.schemas import Cfg
 # TODO: Wandb Watch
 
 
-def train(config: Cfg):
+def train(config: Config):
     # RUN_NAME = "lightning-profile-test-5"
     RUN_NAME = config.run_name
     VAL_LOSS = "val/loss"
@@ -52,12 +55,7 @@ def train(config: Cfg):
     loss_fn = SimCLRLoss(temperature=config.temperature)
 
     # initialize architecture
-    # architecture = Architecture(
-    #   patch_size=config.patch_size,
-    #   channels=config.channels,
-    #   embed_dim=config.embed_dim
-    # )
-    architecture = create_model(model_name="vit_small_patch16_224", num_classes=0)
+    architecture: nn.Module = instantiate(config.architecture)
 
     # initialize model
     vision = Vision(architecture=architecture, loss_fn=loss_fn, config=config)
