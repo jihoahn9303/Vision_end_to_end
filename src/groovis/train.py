@@ -8,7 +8,7 @@ from torch.optim import Optimizer
 from torch.optim.lr_scheduler import _LRScheduler
 
 from src.groovis.configs import Config
-from src.groovis.models.module import Vision
+from src.groovis.module import Vision
 
 # <TODO List for Training and Validation>
 # TODO: Learning Rate Scheduling

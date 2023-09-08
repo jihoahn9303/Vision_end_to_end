@@ -13,7 +13,7 @@ from pytorch_lightning.loggers.wandb import WandbLogger
 from pytorch_lightning.profilers.pytorch import PyTorchProfiler
 
 from src.groovis.configs import full_builds
-from src.groovis.models.module import VAL_LOSS
+from src.groovis.module import VAL_LOSS
 
 WandbLoggerConfig = full_builds(
     WandbLogger,
