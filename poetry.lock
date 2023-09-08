@@ -697,6 +697,43 @@ torch = ["torch"]
 typing = ["pydantic", "types-PyYAML", "types-requests", "types-simplejson", "types-toml", "types-tqdm", "types-urllib3"]
 
 [[package]]
+name = "hydra-core"
+version = "1.3.2"
+description = "A framework for elegantly configuring complex applications"
+optional = false
+python-versions = "*"
+files = [
+    {file = "hydra-core-1.3.2.tar.gz", hash = "sha256:8a878ed67216997c3e9d88a8e72e7b4767e81af37afb4ea3334b269a4390a824"},
+    {file = "hydra_core-1.3.2-py3-none-any.whl", hash = "sha256:fa0238a9e31df3373b35b0bfb672c34cc92718d21f81311d8996a16de1141d8b"},
+]
+
+[package.dependencies]
+antlr4-python3-runtime = "==4.9.*"
+omegaconf = ">=2.2,<2.4"
+packaging = "*"
+
+[[package]]
+name = "hydra-zen"
+version = "0.11.0"
+description = "Configurable, reproducible, and scalable workflows in Python, via Hydra"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "hydra_zen-0.11.0-py3-none-any.whl", hash = "sha256:a99a87ec5ae758f57d43c35ae20e172d849e67c0b916c2f91daa4f90b52dc6e5"},
+    {file = "hydra_zen-0.11.0.tar.gz", hash = "sha256:10f11ca0c03d069fe7653d53fcfd95c1e3512609e31c7e436bf1722cb7e7679f"},
+]
+
+[package.dependencies]
+hydra-core = ">=1.2.0"
+omegaconf = ">=2.2.1"
+typing-extensions = ">=4.1.0,<4.6.0 || >4.6.0"
+
+[package.extras]
+beartype = ["beartype (>=0.8.0)"]
+pydantic = ["pydantic (>=1.8.2,<2.0.0)"]
+test = ["hypothesis (>=6.28.0)", "pytest (>=3.8)"]
+
+[[package]]
 name = "identify"
 version = "2.5.27"
 description = "File identification library for Python"
@@ -1120,9 +1157,9 @@ files = [
 [package.dependencies]
 numpy = [
     {version = ">=1.21.0", markers = "python_version == \"3.9\" and platform_system == \"Darwin\" and platform_machine == \"arm64\""},
+    {version = ">=1.19.3", markers = "platform_system == \"Linux\" and platform_machine == \"aarch64\" and python_version >= \"3.8\" and python_version < \"3.10\" or python_version > \"3.9\" and python_version < \"3.10\" or python_version >= \"3.9\" and platform_system != \"Darwin\" and python_version < \"3.10\" or python_version >= \"3.9\" and platform_machine != \"arm64\" and python_version < \"3.10\""},
     {version = ">=1.21.4", markers = "python_version >= \"3.10\" and platform_system == \"Darwin\""},
     {version = ">=1.21.2", markers = "platform_system != \"Darwin\" and python_version >= \"3.10\""},
-    {version = ">=1.19.3", markers = "platform_system == \"Linux\" and platform_machine == \"aarch64\" and python_version >= \"3.8\" and python_version < \"3.10\" or python_version > \"3.9\" and python_version < \"3.10\" or python_version >= \"3.9\" and platform_system != \"Darwin\" and python_version < \"3.10\" or python_version >= \"3.9\" and platform_machine != \"arm64\" and python_version < \"3.10\""},
 ]
 
 [[package]]
@@ -2504,4 +2541,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.11"
-content-hash = "b5448223dcaea4ff1a036229f6b0744ee345c8a707f5b2067d2b5a722a9e9080"
+content-hash = "4d61d8999f58cf23f187043bd25cff53081737bbe58f3302b8791ad67660acfb"

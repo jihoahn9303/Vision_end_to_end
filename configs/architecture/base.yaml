@@ -1,0 +1,5 @@
+# call class instance or function whatever you want by _target_
+_target_: src.groovis.models.architectures.Architecture
+patch_size: 16
+channels: 3
+embed_dim: 768
