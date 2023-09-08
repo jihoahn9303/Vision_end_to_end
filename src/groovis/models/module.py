@@ -1,10 +1,10 @@
 import torch
-import torch_optimizer as optim
+from hydra_zen.typing import Partial
 from pytorch_lightning import LightningModule
 from torch import nn
+from torch.optim import Optimizer
+from torch.optim.lr_scheduler import _LRScheduler
 from torchmetrics import MeanMetric
-
-from src.groovis.schemas import Config
 
 TRAIN_LOSS = "train/loss"
 VAL_LOSS = "val/loss"
@@ -12,16 +12,20 @@ VAL_LOSS = "val/loss"
 
 # self-contained class (architecture + instruction for architecture)
 class Vision(LightningModule):
-    hparams: Config
-
     def __init__(
-        self, architecture: nn.Module, loss_fn: nn.Module, config: Config
+        self,
+        architecture: nn.Module,
+        loss_fn: nn.Module,
+        optimizer: Partial[Optimizer],
+        scheduler: Partial[_LRScheduler],
     ) -> None:
         super().__init__()
 
-        self.save_hyperparameters(config)  # load configurations in pytorch-lightning
         self.architecture = architecture
         self.loss_fn = loss_fn
+        self.optimizer = optimizer
+        self.scheduler = scheduler
+
         self.train_loss = MeanMetric()
         self.val_loss = MeanMetric()
 
@@ -64,19 +68,22 @@ class Vision(LightningModule):
 
     def configure_optimizers(self):
         # set optimizer
-        optimizer = optim.LARS(params=self.parameters(), lr=self.hparams.base_lr)
+        optimizer = self.optimizer(params=self.parameters())
 
         # set scheduler
-        scheduler = torch.optim.lr_scheduler.OneCycleLR(
-            optimizer=optimizer,
-            max_lr=self.hparams.base_lr,
-            # automatically calculate total setps in pytorch-lightning trainer
-            total_steps=self.trainer.estimated_stepping_batches,
-            pct_start=self.hparams.warmup_epochs / self.hparams.epochs,
-            anneal_strategy="linear",
-            div_factor=self.hparams.base_lr / self.hparams.warmup_lr,
-            final_div_factor=1e6,
+        scheduler = self.scheduler(
+            optimizer=optimizer, total_steps=self.trainer.estimated_stepping_batches
         )
+        # scheduler = torch.optim.lr_scheduler.OneCycleLR(
+        #     optimizer=optimizer,
+        #     max_lr=self.hparams.base_lr,
+        #     # automatically calculate total setps in pytorch-lightning trainer
+        #     total_steps=self.trainer.estimated_stepping_batches,
+        #     pct_start=self.hparams.warmup_epochs / self.hparams.epochs,
+        #     anneal_strategy="linear",
+        #     div_factor=self.hparams.base_lr / self.hparams.warmup_lr,
+        #     final_div_factor=1e6,
+        # )
 
         return {
             "optimizer": optimizer,

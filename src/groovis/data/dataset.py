@@ -10,7 +10,6 @@ from datasets import load_dataset
 from PIL import Image
 from torch.utils.data import Dataset
 
-from src.groovis.data.augmentation import SIMCLR_AUG_RELAXED
 from src.groovis.utils import image_path_to_array
 
 Splits = Literal["train", "validation"]
@@ -18,7 +17,7 @@ IMG_EXTENSIONS = [".webp", ".jpg", ".jpeg", ".png"]
 
 
 class Animals(Dataset):
-    def __init__(self, root: str, transforms: A.Compose = SIMCLR_AUG_RELAXED):
+    def __init__(self, root: str, transforms: A.Compose):
         self.paths = [
             path for path in Path(root).iterdir() if path.suffix in IMG_EXTENSIONS
         ]
@@ -37,9 +36,7 @@ class Animals(Dataset):
 class BaseImagenet(Dataset):
     dataset: Union[D.DatasetDict, D.Dataset, D.IterableDatasetDict, D.IterableDataset]
 
-    def __init__(
-        self, transforms: A.Compose = SIMCLR_AUG_RELAXED, split: Splits = "train"
-    ):
+    def __init__(self, split: Splits, transforms: A.Compose):
         self.transforms = transforms
         self.set_dataset(split=split)
 
@@ -60,9 +57,7 @@ class BaseImagenet(Dataset):
 
 
 class Imagenette(BaseImagenet):
-    def __init__(
-        self, transforms: A.Compose = SIMCLR_AUG_RELAXED, split: Splits = "train"
-    ):
+    def __init__(self, split: Splits, transforms: A.Compose):
         super().__init__(transforms, split)
 
     def set_dataset(self, split: Splits):
@@ -70,9 +65,7 @@ class Imagenette(BaseImagenet):
 
 
 class Imagenet(BaseImagenet):
-    def __init__(
-        self, transforms: A.Compose = SIMCLR_AUG_RELAXED, split: Splits = "train"
-    ):
+    def __init__(self, split: Splits, transforms: A.Compose):
         super().__init__(transforms, split)
 
     def set_dataset(self, split: Splits):
