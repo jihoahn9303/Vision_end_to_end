@@ -29,8 +29,8 @@ from src.groovis.module import Vision
 # TODO: Wandb Watch
 
 
-def train(config: Config):
-    experiment: Config = instantiate(config)
+def train(configuration: Config):
+    experiment: Config = instantiate(configuration)
 
     # load data
     datamodule: LightningDataModule = experiment.datamodule
@@ -49,7 +49,7 @@ def train(config: Config):
     model = Vision(
         architecture=architecture,
         loss_fn=loss_fn,
-        optmizer=optimizer,
+        optimizer=optimizer,
         scheduler=scheduler,
     )
 
@@ -60,11 +60,13 @@ def train(config: Config):
     logger: WandbLogger = trainer.logger
 
     logger.watch(
-        model=architecture, log="all", log_freq=config.trainer.log_every_n_steps
+        model=architecture, log="all", log_freq=configuration.trainer.log_every_n_steps
     )
 
     if trainer.is_global_zero:
         if isinstance(trainer.logger, WandbLogger):
-            trainer.logger.experiment.config.update(OmegaConf.to_container(config))
+            trainer.logger.experiment.config.update(
+                OmegaConf.to_container(configuration)
+            )
 
     trainer.fit(model=model, datamodule=datamodule)

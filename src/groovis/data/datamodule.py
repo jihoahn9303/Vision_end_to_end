@@ -9,9 +9,11 @@ from src.groovis.data.dataset import BaseImagenet
 
 
 class ImagenetModule(LightningDataModule):
-    trainer: Optional[Trainer]
+    trainer: Trainer
 
-    def __init__(self, dataloader: Partial[DataLoader], dataset: Partial[BaseImagenet]):
+    def __init__(
+        self, dataloader: Partial[DataLoader], dataset: Partial[BaseImagenet]
+    ) -> None:
         super().__init__()
         self.dataloader = dataloader
         self.dataset = dataset
@@ -23,20 +25,34 @@ class ImagenetModule(LightningDataModule):
     def train_dataloader(self) -> DataLoader:
         return self.dataloader(
             dataset=self.dataset(split="train"),
-            # control number of processor for parallel processing
-            num_workers=None if self.on_cpu else self.trainer.num_devices * 4,
-            # number of batch to pull before next training step
-            prefetch_factor=2,
-            # aggregate batch tensor to pass that to GPU right away
-            pin_memory=None if self.on_cpu else True,
+            **(
+                {
+                    # control number of processor for parallel processing
+                    "num_workers": self.trainer.num_devices * 4,
+                    # number of batch to pull before next training step
+                    "prefetch_factor": 2,
+                    "persistent_workers": True,
+                    # aggregate batch tensor to pass that to GPU right away
+                    "pin_memory": True,
+                }
+                if not self.on_cpu
+                else {}
+            )
         )
 
     def val_dataloader(self) -> DataLoader:
-        return DataLoader(
+        return self.dataloader(
             dataset=self.dataset(split="validation"),
-            num_workers=None if self.on_cpu else self.trainer.num_devices * 4,
-            prefetch_factor=2,
-            pin_memory=None if self.on_cpu else True,
+            **(
+                {
+                    "num_workers": self.trainer.num_devices * 4,
+                    "prefetch_factor": 2,
+                    "persistent_workers": True,
+                    "pin_memory": True,
+                }
+                if not self.on_cpu
+                else {}
+            )
         )
 
     @property

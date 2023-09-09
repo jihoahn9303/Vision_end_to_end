@@ -36,7 +36,11 @@ class Animals(Dataset):
 class BaseImagenet(Dataset):
     dataset: Union[D.DatasetDict, D.Dataset, D.IterableDatasetDict, D.IterableDataset]
 
-    def __init__(self, split: Splits, transforms: A.Compose):
+    def __init__(
+        self,
+        transforms: A.Compose,
+        split: Splits = "train",
+    ):
         self.transforms = transforms
         self.set_dataset(split=split)
 

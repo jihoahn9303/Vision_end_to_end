@@ -72,7 +72,8 @@ class Vision(LightningModule):
 
         # set scheduler
         scheduler = self.scheduler(
-            optimizer=optimizer, total_steps=self.trainer.estimated_stepping_batches
+            optimizer=optimizer,
+            total_steps=self.trainer.estimated_stepping_batches,
         )
         # scheduler = torch.optim.lr_scheduler.OneCycleLR(
         #     optimizer=optimizer,

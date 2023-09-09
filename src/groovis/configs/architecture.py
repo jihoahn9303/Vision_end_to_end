@@ -61,9 +61,9 @@ BaseArchitectureConfig = ArchitectureConfig(embed_dim=768)
 LargeArchitectureConfig = ArchitectureConfig(embed_dim=1024)
 
 TimmModeConfig = full_builds(create_model, num_classes=0)
-SmallViTTimmModelConfig = TimmModeConfig(model_name="vit_small_tim")
-BaseViTTimmModelConfig = TimmModeConfig(model_name="vit_base_tim")
-LargeViTTimmModelConfig = TimmModeConfig(model_name="vit_large_tim")
+SmallViTTimmModelConfig = TimmModeConfig(model_name="vit_small_patch16_224")
+BaseViTTimmModelConfig = TimmModeConfig(model_name="vit_base_patch16_224")
+LargeViTTimmModelConfig = TimmModeConfig(model_name="vit_large_patch16_224")
 
 
 def _register_configs():

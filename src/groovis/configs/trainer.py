@@ -27,7 +27,7 @@ WandbLoggerConfig = full_builds(
 ModelCheckpointConfig = full_builds(
     ModelCheckpoint,
     dirpath="checkpoints/",
-    filename="{epoch:02d}-val_loss{" + VAL_LOSS + ":.2f}",
+    filename="epoch={epoch:02d}-val_loss={" + VAL_LOSS + ":.2f}",
     # save the last ckpt file(last.ckpt) to restore environment
     save_last=True,
     # monitor value for written key
@@ -118,12 +118,20 @@ def _register_configs():
     cs.store(
         group="trainer",
         name="cpu",
-        node=TrainerConfig(precision=32, accelerator="cpu", devices=None),
+        node=TrainerConfig(
+            precision=32,
+            accelerator="cpu",
+            devices=None,
+        ),
     )
     cs.store(
         group="trainer",
         name="gpu",
-        node=TrainerConfig(precision=16, accelerator="gpu", devices="auto"),
+        node=TrainerConfig(
+            precision=16,
+            accelerator="gpu",
+            devices="auto",
+        ),
     )
     cs.store(
         group="trainer",
@@ -152,8 +160,10 @@ def _register_configs():
             precision=32,
             accelerator="cpu",
             devices=None,
-            logger=WandbLoggerConfig(offline=True, log_model=False),
-            fast_dev_run=True,
+            logger=WandbLoggerConfig(
+                offline=True,
+                log_model=False,
+            ),
         ),
     )
 

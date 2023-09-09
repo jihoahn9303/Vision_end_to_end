@@ -124,13 +124,13 @@ frozenlist = ">=1.1.0"
 
 [[package]]
 name = "albumentations"
-version = "1.3.1"
+version = "1.2.1"
 description = "Fast image augmentation library and easy to use wrapper around other libraries"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.6"
 files = [
-    {file = "albumentations-1.3.1-py3-none-any.whl", hash = "sha256:6b641d13733181d9ecdc29550e6ad580d1bfa9d25e2213a66940062f25e291bd"},
-    {file = "albumentations-1.3.1.tar.gz", hash = "sha256:a6a38388fe546c568071e8c82f414498e86c9ed03c08b58e7a88b31cf7a244c6"},
+    {file = "albumentations-1.2.1-py3-none-any.whl", hash = "sha256:4edce6d3e6349209fae1a382d48d86205f8b87776318c7d7f99832a2cffefc5e"},
+    {file = "albumentations-1.2.1.tar.gz", hash = "sha256:cfab09f0013fccfa672863f46334c88d2036fcb6b7076d1cc5e50fd710bf1bf0"},
 ]
 
 [package.dependencies]
@@ -139,7 +139,7 @@ opencv-python-headless = ">=4.1.1"
 PyYAML = "*"
 qudida = ">=0.0.4"
 scikit-image = ">=0.16.1"
-scipy = ">=1.1.0"
+scipy = "*"
 
 [package.extras]
 develop = ["imgaug (>=0.4.0)", "pytest"]
@@ -698,39 +698,38 @@ typing = ["pydantic", "types-PyYAML", "types-requests", "types-simplejson", "typ
 
 [[package]]
 name = "hydra-core"
-version = "1.3.2"
+version = "1.2.0"
 description = "A framework for elegantly configuring complex applications"
 optional = false
 python-versions = "*"
 files = [
-    {file = "hydra-core-1.3.2.tar.gz", hash = "sha256:8a878ed67216997c3e9d88a8e72e7b4767e81af37afb4ea3334b269a4390a824"},
-    {file = "hydra_core-1.3.2-py3-none-any.whl", hash = "sha256:fa0238a9e31df3373b35b0bfb672c34cc92718d21f81311d8996a16de1141d8b"},
+    {file = "hydra-core-1.2.0.tar.gz", hash = "sha256:4990721ce4ac69abafaffee566d6b63a54faa6501ecce65b338d3251446ff634"},
+    {file = "hydra_core-1.2.0-py3-none-any.whl", hash = "sha256:b6614fd6d6a97a9499f7ddbef02c9dd38f2fec6a9bc83c10e248db1dae50a528"},
 ]
 
 [package.dependencies]
 antlr4-python3-runtime = "==4.9.*"
-omegaconf = ">=2.2,<2.4"
+omegaconf = ">=2.2,<3.0"
 packaging = "*"
 
 [[package]]
 name = "hydra-zen"
-version = "0.11.0"
+version = "0.9.0rc5"
 description = "Configurable, reproducible, and scalable workflows in Python, via Hydra"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.7"
 files = [
-    {file = "hydra_zen-0.11.0-py3-none-any.whl", hash = "sha256:a99a87ec5ae758f57d43c35ae20e172d849e67c0b916c2f91daa4f90b52dc6e5"},
-    {file = "hydra_zen-0.11.0.tar.gz", hash = "sha256:10f11ca0c03d069fe7653d53fcfd95c1e3512609e31c7e436bf1722cb7e7679f"},
+    {file = "hydra_zen-0.9.0rc5-py3-none-any.whl", hash = "sha256:0939e228780c287f5d8b7faaaea3500ec09875b6f86ee203d9b449f89a774dd4"},
+    {file = "hydra_zen-0.9.0rc5.tar.gz", hash = "sha256:1f45ae729e040cce5a916e3745ba39ff055c0002f60436be75a151d1e0747ded"},
 ]
 
 [package.dependencies]
-hydra-core = ">=1.2.0"
-omegaconf = ">=2.2.1"
-typing-extensions = ">=4.1.0,<4.6.0 || >4.6.0"
+hydra-core = ">=1.1.0"
+typing-extensions = ">=4.1.0"
 
 [package.extras]
 beartype = ["beartype (>=0.8.0)"]
-pydantic = ["pydantic (>=1.8.2,<2.0.0)"]
+pydantic = ["pydantic (>=1.8.2)"]
 test = ["hypothesis (>=6.28.0)", "pytest (>=3.8)"]
 
 [[package]]
@@ -2541,4 +2540,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.11"
-content-hash = "4d61d8999f58cf23f187043bd25cff53081737bbe58f3302b8791ad67660acfb"
+content-hash = "736013505d8b22f8d3ce134b8b5fd5e80bb6de3204136dadf6b66610eab8a72e"

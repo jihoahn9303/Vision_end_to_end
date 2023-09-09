@@ -8,7 +8,7 @@ from omegaconf import MISSING
 
 defaults = [
     "_self_",
-    {"architecture": "base"},
+    {"architecture": "vit_small_tim"},
     {"loss": "nt_xent_medium"},
     {"datamodule": "imagenet"},
     {"datamodule/dataset": "imagenette"},
@@ -16,6 +16,7 @@ defaults = [
     {"datamodule/dataloader": "base"},
     {"trainer": "auto"},
     {"trainer/callbacks": "default"},
+    {"trainer/logger": "wandb"},
     {"optimizer": "adam"},
     {"scheduler": "onecycle"},
 ]
@@ -48,5 +49,6 @@ def register_configs():
         module_finder = module_info.module_finder
 
         module = module_finder.find_module(name).load_module(name)
+
         if hasattr(module, "_register_configs"):
             module._register_configs()
