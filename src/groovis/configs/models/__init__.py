@@ -1,8 +1,17 @@
+from enum import IntEnum
+
 from hydra.core.config_store import ConfigStore
-from timm import create_model
 
 from src.groovis.configs import full_builds
-from src.groovis.models.architectures import Architecture
+from src.groovis.models import Architecture
+from src.groovis.models.components.patch_embed import PatchEmbed
+
+
+class EmbedDim(IntEnum):
+    SMALL = 384
+    BASE = 768
+    LARGE = 1024
+
 
 # Hydra version
 # def import_path(x: Any):
@@ -56,21 +65,38 @@ from src.groovis.models.architectures import Architecture
 # Hydra-zen Version
 # return dataclasses type
 ArchitectureConfig = full_builds(Architecture)
-SmallArchitectureConfig = ArchitectureConfig(embed_dim=384)
-BaseArchitectureConfig = ArchitectureConfig(embed_dim=768)
-LargeArchitectureConfig = ArchitectureConfig(embed_dim=1024)
-
-TimmModeConfig = full_builds(create_model, num_classes=0)
-SmallViTTimmModelConfig = TimmModeConfig(model_name="vit_small_patch16_224")
-BaseViTTimmModelConfig = TimmModeConfig(model_name="vit_base_patch16_224")
-LargeViTTimmModelConfig = TimmModeConfig(model_name="vit_large_patch16_224")
+PatchEmbedConfig = full_builds(PatchEmbed)
 
 
 def _register_configs():
     cs = ConfigStore.instance()
-    cs.store(group="architecture", name="small", node=SmallArchitectureConfig)
-    cs.store(group="architecture", name="base", node=BaseArchitectureConfig)
-    cs.store(group="architecture", name="large", node=LargeArchitectureConfig)
-    cs.store(group="architecture", name="vit_small_tim", node=SmallViTTimmModelConfig)
-    cs.store(group="architecture", name="vit_base_tim", node=BaseViTTimmModelConfig)
-    cs.store(group="architecture", name="vit_large_tim", node=LargeViTTimmModelConfig)
+    cs.store(
+        group="architecture",
+        name="simple_small",
+        node=ArchitectureConfig(
+            patch_embed=PatchEmbedConfig(
+                embed_dim=EmbedDim.SMALL.value,
+            ),
+            backbone=None,
+        ),
+    )
+    cs.store(
+        group="architecture",
+        name="simple_base",
+        node=ArchitectureConfig(
+            patch_embed=PatchEmbedConfig(
+                embed_dim=EmbedDim.BASE.value,
+            ),
+            backbone=None,
+        ),
+    )
+    cs.store(
+        group="architecture",
+        name="simple_large",
+        node=ArchitectureConfig(
+            patch_embed=PatchEmbedConfig(
+                embed_dim=EmbedDim.LARGE.value,
+            ),
+            backbone=None,
+        ),
+    )

@@ -164,6 +164,7 @@ def _register_configs():
                 offline=True,
                 log_model=False,
             ),
+            fast_dev_run=True,
         ),
     )
 

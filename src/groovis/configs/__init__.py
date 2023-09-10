@@ -4,11 +4,12 @@ from typing import Any
 
 from hydra.core.config_store import ConfigStore
 from hydra_zen import make_custom_builds_fn
+from hydra_zen.third_party.beartype import validates_with_beartype
 from omegaconf import MISSING
 
 defaults = [
     "_self_",
-    {"architecture": "vit_small_tim"},
+    {"architecture": "mixer_base"},
     {"loss": "nt_xent_medium"},
     {"datamodule": "imagenet"},
     {"datamodule/dataset": "imagenette"},
@@ -16,7 +17,7 @@ defaults = [
     {"datamodule/dataloader": "base"},
     {"trainer": "auto"},
     {"trainer/callbacks": "default"},
-    {"trainer/logger": "wandb"},
+    # {"trainer/logger": "wandb"},
     {"optimizer": "adam"},
     {"scheduler": "onecycle"},
 ]
@@ -35,9 +36,12 @@ class Config:
 
 full_builds = make_custom_builds_fn(
     # Using default hyperparameter
-    populate_full_signature=True
+    populate_full_signature=True,
+    zen_wrappers=validates_with_beartype,
 )
-partial_builds = make_custom_builds_fn(populate_full_signature=True, zen_partial=True)
+partial_builds = make_custom_builds_fn(
+    populate_full_signature=True, zen_partial=True, zen_wrappers=validates_with_beartype
+)
 
 
 def register_configs():

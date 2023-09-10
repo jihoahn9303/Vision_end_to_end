@@ -59,14 +59,19 @@ def train(configuration: Config):
     # set logger
     logger: WandbLogger = trainer.logger
 
-    logger.watch(
-        model=architecture, log="all", log_freq=configuration.trainer.log_every_n_steps
-    )
+    if isinstance(trainer.logger, WandbLogger):
+        trainer.logger.experiment.config.update(OmegaConf.to_container(configuration))
 
-    if trainer.is_global_zero:
-        if isinstance(trainer.logger, WandbLogger):
-            trainer.logger.experiment.config.update(
-                OmegaConf.to_container(configuration)
-            )
+        logger.watch(
+            model=architecture,
+            log="all",
+            log_freq=configuration.trainer.log_every_n_steps,
+        )
+
+    # if trainer.is_global_zero:
+    #     if isinstance(trainer.logger, WandbLogger):
+    #         trainer.logger.experiment.config.update(
+    #             OmegaConf.to_container(configuration)
+    #         )
 
     trainer.fit(model=model, datamodule=datamodule)
