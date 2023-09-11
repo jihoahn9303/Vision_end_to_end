@@ -12,6 +12,7 @@ from beartype.vale import Is
 from jaxtyping import Float, jaxtyped
 
 StrictInt = Annotated[int, Is[lambda x: x > 0]]
+StrictFloat = Annotated[float, Is[lambda x: x > 0]]
 
 
 def torchtyped(fn):
@@ -23,6 +24,8 @@ def torchtyped(fn):
     return jaxtyped(beartype(fn))
 
 
+AnyTensor: TypeAlias = Float[torch.Tensor, "*shape"]
+# AnyTensor: TypeAlias = Float[torch.Tensor, "..."]
 ImageTensor: TypeAlias = Float[torch.Tensor, "batch channel height width"]
 SequenceTensor: TypeAlias = Float[torch.Tensor, "batch sequence feature"]
 PooledTensor: TypeAlias = Float[torch.Tensor, "batch feature"]
