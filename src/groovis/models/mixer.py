@@ -68,16 +68,16 @@ class CrossTokenMixerBlock(nn.Module):
                 "b n_in d -> b n_out d",
                 weight_shape="n_in n_out",
                 bias_shape="n_out",
-                d_in=seq_len,
-                d_out=int(expansion_factor * seq_len),
+                n_in=seq_len,
+                n_out=int(expansion_factor * seq_len),
             ),
             act_layer(),
             EinMix(
                 "b n_out d -> b n_in d",
                 weight_shape="n_out n_in",
                 bias_shape="n_in",
-                d_in=seq_len,
-                d_out=int(expansion_factor * seq_len),
+                n_in=seq_len,
+                n_out=int(expansion_factor * seq_len),
             ),
         )
 
@@ -88,6 +88,7 @@ class CrossTokenMixerBlock(nn.Module):
         return self.block(representation)
 
 
+# Implementaion for MLP-Mixer
 class Mixer(nn.Module):
     def __init__(
         self,
@@ -104,8 +105,8 @@ class Mixer(nn.Module):
         self.blocks = nn.ModuleList([])
 
         for _ in range(depth):
-            self.blocks.append(norm(block=per_location_block()))
             self.blocks.append(norm(block=cross_location_block()))
+            self.blocks.append(norm(block=per_location_block()))
 
     @torchtyped
     def forward(self, representation: SequenceTensor) -> SequenceTensor:

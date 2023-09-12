@@ -10,7 +10,7 @@ from torch import nn
 
 from src.groovis.types import AnyTensor, StrictInt
 
-# residual connection
+# residual connection or skip connection
 # example) keep background and dive deeply into
 # some region that we really want to explore
 
