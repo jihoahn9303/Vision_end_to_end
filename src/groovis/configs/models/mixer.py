@@ -9,11 +9,17 @@ from src.groovis.configs.models import (
 )
 from src.groovis.configs.models.components.act_layer import GELUConfig
 from src.groovis.configs.models.components.layer_norm import PreNormConfig
-from src.groovis.models.mixer import Mixer, MixerBlock
+from src.groovis.models.mixer import CrossTokenMixerBlock, Mixer, PerTokenMixerBlock
 
-MixerBlockConfig = partial_builds(
-    MixerBlock,
+PerTokenMixerBlockConfig = partial_builds(
+    PerTokenMixerBlock,
     expansion_factor=4,
+    act_layer=GELUConfig,
+)
+CrossTokenMixerConfig = partial_builds(
+    CrossTokenMixerBlock,
+    expansion_factor=0.5,
+    act_layer=GELUConfig,
 )
 MixerConfig = full_builds(Mixer)
 
@@ -28,9 +34,11 @@ def _register_configs():
                 embed_dim=EmbedDim.SMALL.value,
             ),
             backbone=MixerConfig(
-                block=MixerBlockConfig(
+                per_location_block=PerTokenMixerBlockConfig(
                     embed_dim=EmbedDim.SMALL.value,
-                    act_layer=GELUConfig,
+                ),
+                cross_location_block=CrossTokenMixerConfig(
+                    seq_len=14 * 14,
                 ),
                 norm=PreNormConfig(embed_dim=EmbedDim.SMALL.value),
                 depth=Depth.SMALL.value,
@@ -45,9 +53,11 @@ def _register_configs():
                 embed_dim=EmbedDim.BASE.value,
             ),
             backbone=MixerConfig(
-                block=MixerBlockConfig(
+                per_location_block=PerTokenMixerBlockConfig(
                     embed_dim=EmbedDim.BASE.value,
-                    act_layer=GELUConfig,
+                ),
+                cross_location_block=CrossTokenMixerConfig(
+                    seq_len=14 * 14,
                 ),
                 norm=PreNormConfig(embed_dim=EmbedDim.BASE.value),
                 depth=Depth.BASE.value,
@@ -62,9 +72,11 @@ def _register_configs():
                 embed_dim=EmbedDim.LARGE.value,
             ),
             backbone=MixerConfig(
-                block=MixerBlockConfig(
+                per_location_block=PerTokenMixerBlockConfig(
                     embed_dim=EmbedDim.LARGE.value,
-                    act_layer=GELUConfig,
+                ),
+                cross_location_block=CrossTokenMixerConfig(
+                    seq_len=14 * 14,
                 ),
                 norm=PreNormConfig(embed_dim=EmbedDim.LARGE.value),
                 depth=Depth.LARGE.value,

@@ -10,6 +10,10 @@ from torch import nn
 
 from src.groovis.types import AnyTensor, StrictInt
 
+# residual connection
+# example) keep background and dive deeply into
+# some region that we really want to explore
+
 
 class PreNorm(nn.Module):
     def __init__(self, block: nn.Module, embed_dim: StrictInt = 1024) -> None:
