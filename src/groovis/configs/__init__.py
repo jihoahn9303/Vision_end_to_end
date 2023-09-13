@@ -9,7 +9,7 @@ from omegaconf import MISSING
 
 defaults = [
     "_self_",
-    {"architecture": "mixer_base"},
+    {"architecture": "vit_small"},
     {"loss": "nt_xent_medium"},
     {"datamodule": "imagenet"},
     {"datamodule/dataset": "imagenette"},

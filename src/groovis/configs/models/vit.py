@@ -11,8 +11,8 @@ from src.groovis.configs.models.components.act_layer import GELUConfig
 from src.groovis.configs.models.components.layer_norm import PreNormConfig
 from src.groovis.models.vit import (
     AlternatingBackbone,
-    CrossTokenMixerBlock,
     PerTokenMixerBlock,
+    SelfAttention,
 )
 
 PerTokenMixerBlockConfig = partial_builds(
@@ -20,19 +20,16 @@ PerTokenMixerBlockConfig = partial_builds(
     expansion_factor=4,
     act_layer=GELUConfig,
 )
-CrossTokenMixerConfig = partial_builds(
-    CrossTokenMixerBlock,
-    expansion_factor=0.5,
-    act_layer=GELUConfig,
-)
+SelfAttentionConfig = partial_builds(SelfAttention)
 AlternatingBackboneConfig = full_builds(AlternatingBackbone)
 
 
 def _register_configs():
     cs = ConfigStore.instance()
+
     cs.store(
         group="architecture",
-        name="mixer_small",
+        name="vit_small",
         node=ArchitectureConfig(
             patch_embed=PatchEmbedConfig(
                 embed_dim=EmbedDim.SMALL.value,
@@ -41,8 +38,8 @@ def _register_configs():
                 per_location_block=PerTokenMixerBlockConfig(
                     embed_dim=EmbedDim.SMALL.value,
                 ),
-                cross_location_block=CrossTokenMixerConfig(
-                    seq_len=14 * 14,
+                cross_location_block=SelfAttentionConfig(
+                    embed_dim=EmbedDim.SMALL.value, num_heads=6
                 ),
                 norm=PreNormConfig(embed_dim=EmbedDim.SMALL.value),
                 depth=Depth.SMALL.value,
@@ -51,7 +48,7 @@ def _register_configs():
     )
     cs.store(
         group="architecture",
-        name="mixer_base",
+        name="vit_base",
         node=ArchitectureConfig(
             patch_embed=PatchEmbedConfig(
                 embed_dim=EmbedDim.BASE.value,
@@ -60,8 +57,8 @@ def _register_configs():
                 per_location_block=PerTokenMixerBlockConfig(
                     embed_dim=EmbedDim.BASE.value,
                 ),
-                cross_location_block=CrossTokenMixerConfig(
-                    seq_len=14 * 14,
+                cross_location_block=SelfAttentionConfig(
+                    embed_dim=EmbedDim.BASE.value, num_heads=12
                 ),
                 norm=PreNormConfig(embed_dim=EmbedDim.BASE.value),
                 depth=Depth.BASE.value,
@@ -70,7 +67,7 @@ def _register_configs():
     )
     cs.store(
         group="architecture",
-        name="mixer_large",
+        name="vit_large",
         node=ArchitectureConfig(
             patch_embed=PatchEmbedConfig(
                 embed_dim=EmbedDim.LARGE.value,
@@ -79,8 +76,8 @@ def _register_configs():
                 per_location_block=PerTokenMixerBlockConfig(
                     embed_dim=EmbedDim.LARGE.value,
                 ),
-                cross_location_block=CrossTokenMixerConfig(
-                    seq_len=14 * 14,
+                cross_location_block=SelfAttentionConfig(
+                    embed_dim=EmbedDim.LARGE.value, num_heads=16
                 ),
                 norm=PreNormConfig(embed_dim=EmbedDim.LARGE.value),
                 depth=Depth.LARGE.value,

@@ -192,3 +192,5 @@ legacy.txt
 outputs/
 
 configs/architecthre/*
+
+attention.py
