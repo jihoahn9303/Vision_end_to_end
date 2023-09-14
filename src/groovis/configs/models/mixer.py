@@ -9,14 +9,10 @@ from src.groovis.configs.models import (
 )
 from src.groovis.configs.models.components.act_layer import GELUConfig
 from src.groovis.configs.models.components.layer_norm import PreNormConfig
-from src.groovis.models.vit import (
-    AlternatingBackbone,
-    CrossTokenMixerBlock,
-    PerTokenMixerBlock,
-)
+from src.groovis.models.vit import AlternatingBackbone, CrossTokenMixerBlock, MLPBlock
 
-PerTokenMixerBlockConfig = partial_builds(
-    PerTokenMixerBlock,
+MLPBlockConfig = partial_builds(
+    MLPBlock,
     expansion_factor=4,
     act_layer=GELUConfig,
 )
@@ -38,7 +34,7 @@ def _register_configs():
                 embed_dim=EmbedDim.SMALL.value,
             ),
             backbone=AlternatingBackboneConfig(
-                per_location_block=PerTokenMixerBlockConfig(
+                per_location_block=MLPBlockConfig(
                     embed_dim=EmbedDim.SMALL.value,
                 ),
                 cross_location_block=CrossTokenMixerConfig(
@@ -57,7 +53,7 @@ def _register_configs():
                 embed_dim=EmbedDim.BASE.value,
             ),
             backbone=AlternatingBackboneConfig(
-                per_location_block=PerTokenMixerBlockConfig(
+                per_location_block=MLPBlockConfig(
                     embed_dim=EmbedDim.BASE.value,
                 ),
                 cross_location_block=CrossTokenMixerConfig(
@@ -76,7 +72,7 @@ def _register_configs():
                 embed_dim=EmbedDim.LARGE.value,
             ),
             backbone=AlternatingBackboneConfig(
-                per_location_block=PerTokenMixerBlockConfig(
+                per_location_block=MLPBlockConfig(
                     embed_dim=EmbedDim.LARGE.value,
                 ),
                 cross_location_block=CrossTokenMixerConfig(

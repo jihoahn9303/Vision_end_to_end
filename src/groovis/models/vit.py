@@ -1,4 +1,5 @@
-from einops import einsum, rearrange, unpack
+import torch
+from einops import einsum, pack, rearrange, unpack
 from einops.layers.torch import EinMix
 from hydra_zen.typing import Partial
 from torch import nn
@@ -13,7 +14,7 @@ from src.groovis.types import (
 )
 
 
-class PerTokenMixerBlock(nn.Module):
+class MLPBlock(nn.Module):
     """
     Block for per-location mixing operations
     """
@@ -45,44 +46,6 @@ class PerTokenMixerBlock(nn.Module):
         )
 
         self.norm = nn.LayerNorm(embed_dim)
-
-    @torchtyped
-    def forward(self, representation: SequenceTensor) -> SequenceTensor:
-        return self.block(representation)
-
-
-class CrossTokenMixerBlock(nn.Module):
-    """
-    Block for cross-location mixing operations
-    """
-
-    def __init__(
-        self,
-        seq_len: StrictInt = 196,
-        expansion_factor: StrictFloat = 0.5,
-        act_layer: Partial[nn.Module] = nn.GELU,
-    ) -> None:
-        super().__init__()
-
-        self.block: SequenceToSequence = nn.Sequential(
-            EinMix(
-                "b n_in d -> b n_out d",
-                weight_shape="n_in n_out",
-                bias_shape="n_out",
-                n_in=seq_len,
-                n_out=int(expansion_factor * seq_len),
-            ),
-            act_layer(),
-            EinMix(
-                "b n_out d -> b n_in d",
-                weight_shape="n_out n_in",
-                bias_shape="n_in",
-                n_in=seq_len,
-                n_out=int(expansion_factor * seq_len),
-            ),
-        )
-
-        self.norm = nn.LayerNorm(seq_len)
 
     @torchtyped
     def forward(self, representation: SequenceTensor) -> SequenceTensor:
@@ -144,7 +107,120 @@ class SelfAttention(nn.Module):
         return final
 
 
-# Implementaion for MLP-Mixer
+class CrossTokenMixerBlock(nn.Module):
+    """
+    Block for cross-location mixing operations
+    """
+
+    def __init__(
+        self,
+        seq_len: StrictInt = 196,
+        expansion_factor: StrictFloat = 0.5,
+        act_layer: Partial[nn.Module] = nn.GELU,
+    ) -> None:
+        super().__init__()
+
+        self.block: SequenceToSequence = nn.Sequential(
+            EinMix(
+                "b n_in d -> b n_out d",
+                weight_shape="n_in n_out",
+                bias_shape="n_out",
+                n_in=seq_len,
+                n_out=int(expansion_factor * seq_len),
+            ),
+            act_layer(),
+            EinMix(
+                "b n_out d -> b n_in d",
+                weight_shape="n_out n_in",
+                bias_shape="n_in",
+                n_in=seq_len,
+                n_out=int(expansion_factor * seq_len),
+            ),
+        )
+
+        self.norm = nn.LayerNorm(seq_len)
+
+    @torchtyped
+    def forward(self, representation: SequenceTensor) -> SequenceTensor:
+        return self.block(representation)
+
+
+# Implementation for paper named
+# Scaling Vision Transformers to 22 Billion Parameters
+class FusedTransformerBlock(nn.Module):
+    def __init__(
+        self,
+        embed_dim: StrictInt = 1024,
+        expansion_factor: StrictFloat = 4,
+        num_heads: StrictInt = 8,
+        act_layer: Partial[nn.Module] = nn.GELU,
+    ) -> None:
+        super().__init__()
+
+        self.expanded_dim = int(expansion_factor * embed_dim)
+        self.num_heads = num_heads
+        self.head_dim = embed_dim // num_heads
+        self.embed_dim = num_heads * self.head_dim
+
+        self.projection_in = EinMix(
+            pattern="b s d_in, b s d_out -> b s d_out",
+            weight_shape="d_in, d_out",
+            d_in=embed_dim,
+            d_out=self.expanded_dim + 3 * embed_dim,
+        )
+        self.mlp_bias = nn.Parameter(torch.zeros(self.expanded_dim))
+
+        self.projection_out = EinMix(
+            pattern="b s d_out, b s d_in -> b s d_in",
+            weight_shape="d_out, d_in",
+            bias_shape="d_out",
+            d_in=embed_dim,
+            d_out=self.expanded_dim + embed_dim,
+        )
+
+        self.act_layer = act_layer()
+        self.query_norm = nn.LayerNorm(embed_dim)
+        self.key_norm = nn.LayerNorm(embed_dim)
+
+    @torchtyped
+    def forward(self, representation: SequenceTensor) -> SequenceTensor:
+        # get first MLP Layer output and query/key/value together
+        mlp_1st_tensor, query, key, value = unpack(
+            tensor=self.projection_in(representation),
+            packed_shapes=[
+                [self.expanded_dim],
+                [self.embed_dim],
+                [self.embed_dim],
+                [self.embed_dim],
+            ],
+            pattern="b s *",
+        )
+
+        # get attention output
+        query, key, value = map(
+            lambda x: rearrange(x, "b s (h d) -> b h s d", h=self.num_heads),
+            (self.query_norm(query), self.key_norm(key), value),
+        )
+        score = einsum(query, key, "b h q d, b h k d -> b h q k") * (
+            self.num_heads**-0.5
+        )
+        attention_score = score.softmax(dim=-1)
+        attention_output = einsum(attention_score, value, "b h q k, b h k d -> b h q d")
+        attention_output = rearrange(attention_output, "b h q d -> b q (h d)")
+
+        # get 2nd MLP output
+        mlp_2nd_tensor_output = self.act_layer(mlp_1st_tensor + self.mlp_bias)
+
+        # fusion
+        output, _packed_shape = pack(
+            [mlp_2nd_tensor_output, attention_output], pattern="b s *"
+        )
+        output = self.projection_out(output)
+
+        return output
+
+
+# Implementation for MLP-Mixer and Self-attention
 class AlternatingBackbone(nn.Module):
     def __init__(
         self,
@@ -163,6 +239,25 @@ class AlternatingBackbone(nn.Module):
         for _ in range(depth):
             self.blocks.append(norm(block=cross_location_block()))
             self.blocks.append(norm(block=per_location_block()))
+
+    @torchtyped
+    def forward(self, representation: SequenceTensor) -> SequenceTensor:
+        for block in self.blocks:
+            representation = block(representation)
+
+        return representation
+
+
+class HomogeneousBackbone(nn.Module):
+    def __init__(
+        self,
+        block: Partial[nn.Module],
+        norm: Partial[NormType],
+        depth: StrictInt = 24,
+    ) -> None:
+        super().__init__()
+
+        self.blocks = nn.ModuleList([norm(block=block()) for _ in range(depth)])
 
     @torchtyped
     def forward(self, representation: SequenceTensor) -> SequenceTensor:

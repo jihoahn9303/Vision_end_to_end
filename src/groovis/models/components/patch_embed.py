@@ -1,6 +1,5 @@
+import torch
 from einops.layers.torch import EinMix
-
-# from einops.layers.torch import Rearrange
 from torch import nn
 
 from src.groovis.types import (
@@ -11,10 +10,13 @@ from src.groovis.types import (
     torchtyped,
 )
 
+# from einops.layers.torch import Rearrange
+
 
 class PatchEmbed(nn.Module):
     def __init__(
         self,
+        image_size: StrictInt = 224,
         patch_size: StrictInt = 16,
         channels: StrictInt = 3,
         embed_dim: StrictInt = 1024,
@@ -51,9 +53,13 @@ class PatchEmbed(nn.Module):
             d=embed_dim,
         )
 
+        self.position_embedding = nn.Parameter(
+            torch.randn((image_size // patch_size) ** 2, embed_dim) * 0.01
+        )
+
     @torchtyped
     def forward(self, images: ImageTensor) -> SequenceTensor:
-        return self.patch_embed(images)
+        return self.patch_embed(images) + self.position_embedding
 
         # Below code is equivalent to self.projection(patches)
         # representation = torch.einsum(
