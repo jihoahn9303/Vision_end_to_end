@@ -26,3 +26,14 @@ def image_path_to_array(path: str) -> np.ndarray:
     image = np.array(image)
 
     return image
+
+
+def image_path_to_tensor_inference(path: str) -> torch.Tensor:
+    image = Image.open(path).resize((IMAGE_SIZE, IMAGE_SIZE))
+    image = np.array(image) / 255.0
+    image = torch.tensor(image, dtype=torch.float)
+    image = rearrange(
+        image, "h w c -> b c h w", b=1
+    )  # [Height, Width, channel] -> [1, channel, Height, Width]
+
+    return image

@@ -95,7 +95,7 @@ def _register_configs():
 
     cs.store(
         group="architecture",
-        name="parallel_vit__small",
+        name="parallel_vit_small",
         node=ArchitectureConfig(
             patch_embed=PatchEmbedConfig(
                 embed_dim=EmbedDim.SMALL.value,
