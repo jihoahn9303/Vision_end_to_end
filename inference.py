@@ -31,7 +31,7 @@ def main(config: Config):
 
     # download model arfifact from wandb server
     run = wandb.init()
-    artifact = run.use_artifact("jihoahn9303/groovis/model-qwaz7wqi:v2", type="model")
+    artifact = run.use_artifact("jihoahn9303/groovis/model-udab0aj6:v2", type="model")
     artifact_path = artifact.download()
     checkpoint_path = Path(artifact_path) / "model.ckpt"
 
