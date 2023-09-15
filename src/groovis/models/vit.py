@@ -173,7 +173,7 @@ class FusedTransformerBlock(nn.Module):
         self.projection_out = EinMix(
             pattern="b s d_out, b s d_in -> b s d_in",
             weight_shape="d_out, d_in",
-            bias_shape="d_out",
+            bias_shape="d_in",
             d_in=embed_dim,
             d_out=self.expanded_dim + embed_dim,
         )
@@ -196,24 +196,24 @@ class FusedTransformerBlock(nn.Module):
             pattern="b s *",
         )
 
+        # get 2nd MLP input
+        mlp_2nd_tensor_input = self.act_layer(mlp_1st_tensor + self.mlp_bias)
+
         # get attention output
         query, key, value = map(
             lambda x: rearrange(x, "b s (h d) -> b h s d", h=self.num_heads),
             (self.query_norm(query), self.key_norm(key), value),
         )
         score = einsum(query, key, "b h q d, b h k d -> b h q k") * (
-            self.num_heads**-0.5
+            self.head_dim**-0.5
         )
         attention_score = score.softmax(dim=-1)
         attention_output = einsum(attention_score, value, "b h q k, b h k d -> b h q d")
         attention_output = rearrange(attention_output, "b h q d -> b q (h d)")
 
-        # get 2nd MLP output
-        mlp_2nd_tensor_output = self.act_layer(mlp_1st_tensor + self.mlp_bias)
-
-        # fusion
+        # fusion(get 2nd MLP output + final attention output)
         output, _packed_shape = pack(
-            [mlp_2nd_tensor_output, attention_output], pattern="b s *"
+            [mlp_2nd_tensor_input, attention_output], pattern="b s *"
         )
         output = self.projection_out(output)
 
