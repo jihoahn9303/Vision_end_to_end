@@ -163,16 +163,16 @@ class FusedTransformerBlock(nn.Module):
         self.embed_dim = num_heads * self.head_dim
 
         self.projection_in = EinMix(
-            pattern="b s d_in, b s d_out -> b s d_out",
-            weight_shape="d_in, d_out",
+            pattern="batch sequence d_in -> batch sequence d_out",
+            weight_shape="d_in d_out",
             d_in=embed_dim,
             d_out=self.expanded_dim + 3 * embed_dim,
         )
         self.mlp_bias = nn.Parameter(torch.zeros(self.expanded_dim))
 
         self.projection_out = EinMix(
-            pattern="b s d_out, b s d_in -> b s d_in",
-            weight_shape="d_out, d_in",
+            pattern="batch sequence d_out -> batch sequence d_in",
+            weight_shape="d_out d_in",
             bias_shape="d_in",
             d_in=embed_dim,
             d_out=self.expanded_dim + embed_dim,
