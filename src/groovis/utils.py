@@ -33,7 +33,7 @@ def image_path_to_tensor_inference(path: str) -> torch.Tensor:
     image = np.array(image) / 255.0
     image = torch.tensor(image, dtype=torch.float)
     image = rearrange(
-        image, "h w c -> b c h w", b=1
+        image, "h w (b c) -> b c h w", b=1
     )  # [Height, Width, channel] -> [1, channel, Height, Width]
 
     return image
